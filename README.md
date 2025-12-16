@@ -28,14 +28,6 @@ python -m http.server 8000
 # Then visit: http://localhost:8000
 ```
 
-### Using Python HTTP Server
-
-```bash
-python -m http.server 8000
-```
-
-Then open your browser to `http://localhost:8000`
-
 ### Using Node.js HTTP Server
 
 ```bash
