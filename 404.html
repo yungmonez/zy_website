@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>In search of cookies</title>
-</head>
-<body>
-<style>
-        /* CSS styles placed here */
+    <style>
         body {
             font-family: sans-serif;
             display: flex;
@@ -17,33 +14,50 @@
             margin: 0;
             background-color: black;
         }
-
         .video-container {
-            width: 90%;       /* Takes up 90% of the screen width */
-            max-width: 800px;  /* Max width of 800px on large screens */
-            margin: auto;      /* Centers the container */
+            width: 100%;
+            max-width: 100%;
+            margin: auto;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            overflow: hidden; /* Keeps shadow clean */
+            border-radius: 0;
+            overflow: hidden;
+            position: relative;
         }
-
+        @media (min-width: 768px) {
+            .video-container {
+                width: 90%;
+                max-width: 800px;
+                border-radius: 8px;
+            }
+        }
         .video-container video {
-            width: 100%;       /* Video takes the full width of its container */
-            height: auto;      /* Height adjusts automatically to maintain aspect ratio */
-            display: block;    
+            width: 100%;
+            height: auto;
+            display: block;
+            transform: scale(1.1);
+            transform-origin: top center;
         }
-    
-</style>
+    </style>
 </head>
 <body>
-
     <div class="video-container">
-        <video controls autoplay loop muted>
+        <video id="loopVideo" controls autoplay muted loop>
             <source src="movie.mp4#t=1" type="video/mp4">
-            <!-- Fallback text -->
             Your browser does not support the video tag.
         </video>
     </div>
-
+    <script>
+        const video = document.getElementById('loopVideo');
+        // Start video at 1 second when loaded
+        video.addEventListener('loadedmetadata', function() {
+            video.currentTime = 1;
+        });
+        // When video ends, loop back to 1 second
+        video.addEventListener('timeupdate', function() {
+            if (video.currentTime >= video.duration - 0.1) {
+                video.currentTime = 1;
+            }
+        });
+    </script>
 </body>
 </html>
