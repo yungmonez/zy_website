@@ -44,14 +44,18 @@
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <video id="loopVideo" controls autoplay muted playsinline>
+    <div class="video-container" style="position:relative;">
+        <video id="loopVideo" autoplay muted playsinline tabindex="0" style="outline:none;">
             <source src="movie.mp4#t=1" type="video/mp4">
             Your browser does not support the video tag.
         </video>
+        <div id="videoOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);color:#fff;font-size:1.2rem;cursor:pointer;z-index:2;transition:opacity 0.3s;">
+            
+        </div>
     </div>
     <script>
         const video = document.getElementById('loopVideo');
+        const overlay = document.getElementById('videoOverlay');
         // Start video at 1 second when loaded
         video.addEventListener('loadedmetadata', function() {
             video.currentTime = 1;
@@ -60,9 +64,19 @@
         video.addEventListener('timeupdate', function() {
             if (video.currentTime >= video.duration - 0.1) {
                 video.currentTime = 1;
-                // Resume playback after seeking
                 video.play();
             }
+        });
+        // Show controls on first interaction
+        function showControls() {
+            video.setAttribute('controls', '');
+            if (overlay) overlay.style.opacity = 0;
+            setTimeout(() => { if (overlay) overlay.style.display = 'none'; }, 400);
+        }
+        overlay.addEventListener('click', showControls);
+        video.addEventListener('click', showControls);
+        video.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') showControls();
         });
     </script>
 </body>
