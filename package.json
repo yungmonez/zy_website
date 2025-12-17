@@ -1,0 +1,12 @@
+{
+  "name": "zy_website-utils",
+  "version": "1.0.0",
+  "description": "Utility scripts for zy_website (image processing)",
+  "private": true,
+  "scripts": {
+    "crop-bike3": "node scripts/crop-bike3.js"
+  },
+  "dependencies": {
+    "sharp": "^0.32.0"
+  }
+}

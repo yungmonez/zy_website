@@ -69,20 +69,95 @@
             background-color: rgba(28, 23, 44, 0.85); 
             z-index: 0;
         }
+
+        /* Reserve space for the fixed navigation to avoid overlap */
+        :root { --nav-height: 64px; }
+        /* Smaller nav on narrow screens */
+        @media (max-width: 767px) {
+            :root { --nav-height: 56px; }
+        }
+        /* Taller header/nav on very small/tall screens if needed */
+        @media (min-height: 900px) {
+            :root { --nav-height: 72px; }
+        }
+
+        /* include the OS/browser safe-area inset so content isn't hidden under notches
+           We set a CSS variable --safe-top for easier reuse and add legacy constant() fallback
+           for older iOS versions. */
+        :root { --safe-top: env(safe-area-inset-top); }
+        /* legacy constant() fallback for older iOS Safari */
+        :root { --safe-top-legacy: constant(safe-area-inset-top); }
+
+        nav.site-nav {
+            /* Use the safe area inset where supported; fall back gracefully otherwise */
+            padding-top: env(safe-area-inset-top);
+            padding-top: constant(safe-area-inset-top);
+            /* nav visual height controlled by variable, we add safe inset for real height */
+            height: calc(var(--nav-height) + max(env(safe-area-inset-top), 0px));
+        }
+
+        /* make room for the nav + safe area so fixed nav doesn't overlap content */
+        body { padding-top: calc(var(--nav-height) + max(env(safe-area-inset-top), 0px)); }
+
+        /* Hero sizing: prefer the newer svh unit (small viewport) where supported to avoid
+           browser chrome issues; fall back to 100vh. The hero min-height subtracts the
+           nav height so centering is preserved. Also add a small top padding using the
+           safe-area inset or a small default to prevent clipping. */
+        .hero-section {
+            min-height: calc(100svh - calc(var(--nav-height) + max(env(safe-area-inset-top), 0px)));
+            min-height: calc(100vh - calc(var(--nav-height) + max(env(safe-area-inset-top), 0px)));
+            padding-top: max(0.5rem, max(env(safe-area-inset-top), 0px));
+        }
+
+        /* Ensure hero content is pushed down enough so the first line isn't covered by the fixed nav */
+        .hero-section > .container {
+            padding-top: calc(var(--nav-height) * 0.25 + 0.5rem);
+        }
+
+        @media (max-width: 375px) {
+            .hero-section > .container { padding-top: calc(var(--nav-height) * 0.2 + 0.4rem); }
+        }
+
+        /* Very small screens (iPhone SE) adjustments */
+        @media (max-width: 375px) {
+            :root { --nav-height: 48px; }
+            nav.site-nav { padding-top: 4px; padding-bottom: 4px; }
+            .container { padding-left: 12px; padding-right: 12px; }
+            /* Smaller logo */
+            .site-nav img { width: 32px !important; height: 32px !important; }
+            /* Reduce hero typography */
+            .hero-section h1 { font-size: 3rem; }
+            .hero-section h2 { font-size: 2.5rem; }
+            .hero-section p { font-size: 0.95rem; }
+            .hero-section .inline-block { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        }
+
+        /* Final tweaks for very narrow screens (<=360px, e.g., iPhone SE) */
+        @media (max-width: 360px) {
+            :root { --nav-height: 44px; }
+            nav.site-nav { padding-top: 2px; padding-bottom: 2px; }
+            .site-nav img { width: 28px !important; height: 28px !important; }
+            /* Hide the brand text to save horizontal space */
+            .site-nav .text-3xl { display: none; }
+            /* Force smaller hero typography */
+            .hero-section h1 { font-size: 2.25rem !important; }
+            .hero-section h2 { font-size: 1.75rem !important; }
+            .hero-section p { font-size: 0.9rem !important; }
+        }
     </style>
 </head>
 <body class="bg-background text-text-primary font-sans antialiased">
 
     <!-- Fixed Navigation Bar -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm shadow-lg p-4 transition-all duration-300">
+    <nav class="site-nav fixed top-0 left-0 right-0 z-50 bg-white/100 shadow-lg py-2 transition-all duration-300">
         <div class="container mx-auto px-6 max-w-6xl flex justify-between items-center">
             
             <!-- Logo & Brand Name: Now includes an image placeholder (using flex to align) -->
             <a href="#" class="flex items-center space-x-2 text-accent tracking-widest group hover:scale-105 transition duration-300">
                 <!-- Image Placeholder for the uploaded image (using accent/background colors) -->
-                <img src="https://raw.githubusercontent.com/yungmonez/zy_website/main/bike2.jpg" 
-                     alt="Zach Yungst Logo Icon" 
-                     class="w-8 h-8 rounded-full border border-accent/50 group-hover:border-white transition duration-300">
+             <img src="./bike3_header.png" 
+                 alt="Zach Yungst Logo Icon" 
+                 class="w-10 h-10 md:w-12 md:h-12 object-contain group-hover:opacity-90 transition duration-300">
                 <!-- Brand Text -->
                 <span class="text-3xl font-mono font-extrabold">
                     ZY /
@@ -90,21 +165,32 @@
             </a>
             
             <div class="space-x-8 hidden md:flex">
-                <a href="#about" class="nav-link text-text-secondary hover:text-accent transition duration-300 font-medium">01. About</a>
-                <a href="#passions" class="nav-link text-text-secondary hover:text-accent transition duration-300 font-medium">02. Passions</a>
-                <a href="#contact" class="nav-link text-text-secondary hover:text-accent transition duration-300 font-medium border border-accent rounded-md py-1 px-3">03. Contact</a>
+                <a href="#about" class="nav-link text-background hover:text-accent transition duration-300 font-medium">01. About</a>
+                <a href="#passions" class="nav-link text-background hover:text-accent transition duration-300 font-medium">02. Passions</a>
+                <a href="#contact" class="nav-link text-background hover:text-accent transition duration-300 font-medium border border-accent rounded-md py-1 px-3">03. Contact</a>
             </div>
             <!-- Mobile Menu Icon (Hamburger) -->
-            <button class="md:hidden text-accent hover:text-text-primary">
+            <button id="mobile-menu-button" aria-controls="mobile-menu" aria-expanded="false" aria-label="Open main menu" class="md:hidden text-accent hover:text-text-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
             </button>
+
+            <!-- Mobile menu (visually hidden by default to allow animation) -->
+            <div id="mobile-menu" role="dialog" aria-modal="true" aria-hidden="true" class="md:hidden absolute left-0 right-0 top-full bg-white shadow-md z-40 opacity-0 -translate-y-2 pointer-events-none transition-all duration-200 ease-out">
+                <div class="container mx-auto px-6 py-4 max-w-6xl">
+                    <div class="flex flex-col space-y-3">
+                        <a href="#about" class="nav-link text-background hover:text-accent transition duration-300 font-medium">01. About</a>
+                        <a href="#passions" class="nav-link text-background hover:text-accent transition duration-300 font-medium">02. Passions</a>
+                        <a href="#contact" class="nav-link text-background hover:text-accent transition duration-300 font-medium border border-accent rounded-md py-1 px-3 inline-block w-max">03. Contact</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
     <!-- Header & Hero Section - Focused Textual Impact (Now with Image Underlay) -->
-    <header class="h-screen flex items-center justify-center hero-section pt-16">
+    <header class="h-screen flex items-center justify-center hero-section pt-8">
         <div class="container mx-auto px-6 max-w-4xl text-left z-10">
             
             <p class="text-accent font-mono text-lg mb-4">Hi, my name is</p>
@@ -113,7 +199,9 @@
                 Zach Yungst.
             </h1>
             <h2 class="text-7xl md:text-8xl font-extrabold leading-tight text-text-secondary mt-2">
-                I build systems that scale.
+                   I build systems that scale.
+                </h2>
+                <h2 class="text-3xl font-extrabold text-text-primary md:whitespace-nowrap mr-6">
             </h2>
             <p class="mt-8 max-w-xl text-lg text-text-secondary leading-relaxed">
                 Entrepreneur and systems thinker with a background in finance and a successful exit. Currently focused on applying analytical rigor to new, complex operational challenges globally.
@@ -132,7 +220,7 @@
             
             <!-- Section Title with Accent Divider -->
             <div class="flex items-center mb-16">
-                <h2 class="text-3xl font-extrabold text-text-primary whitespace-nowrap mr-6">
+                <h2 class="text-3xl font-extrabold text-text-primary md:whitespace-nowrap mr-6">
                     <span class="text-accent font-mono mr-3">01.</span> About Me
                 </h2>
                 <div class="h-px w-full bg-card hidden md:block"></div>
@@ -176,7 +264,7 @@
             
             <!-- Section Title with Accent Divider -->
             <div class="flex items-center mb-16">
-                <h2 class="text-3xl font-extrabold text-text-primary whitespace-nowrap mr-6">
+                <h2 class="text-3xl font-extrabold text-text-primary md:whitespace-nowrap mr-6">
                     <span class="text-accent font-mono mr-3">02.</span> Passions & Pursuits
                 </h2>
                 <div class="h-px w-full bg-background hidden md:block"></div>
@@ -272,6 +360,96 @@
             </div>
         </div>
     </footer>
+
+    <!-- Mobile menu toggle script (with animation, Esc-to-close, and focus trapping) -->
+    <script>
+        (function(){
+            const btn = document.getElementById('mobile-menu-button');
+            const menu = document.getElementById('mobile-menu');
+            let previousFocus = null;
+
+            if (!btn || !menu) return;
+
+            const ANIM_CLASSES = {
+                open: ['opacity-100', 'translate-y-0', 'pointer-events-auto'],
+                closed: ['opacity-0', '-translate-y-2', 'pointer-events-none']
+            };
+
+            function setAriaHidden(hidden) {
+                menu.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+                if (hidden) menu.setAttribute('inert', ''); else menu.removeAttribute('inert');
+            }
+
+            function openMenu() {
+                previousFocus = document.activeElement;
+                menu.classList.remove(...ANIM_CLASSES.closed);
+                menu.classList.add(...ANIM_CLASSES.open);
+                btn.setAttribute('aria-expanded', 'true');
+                btn.setAttribute('aria-label', 'Close main menu');
+                setAriaHidden(false);
+                // focus first focusable element
+                const first = menu.querySelector('a, button, [tabindex]:not([tabindex="-1"])');
+                if (first) first.focus();
+                document.addEventListener('keydown', onKeyDown);
+            }
+
+            function closeMenu() {
+                menu.classList.remove(...ANIM_CLASSES.open);
+                menu.classList.add(...ANIM_CLASSES.closed);
+                btn.setAttribute('aria-expanded', 'false');
+                btn.setAttribute('aria-label', 'Open main menu');
+                setAriaHidden(true);
+                document.removeEventListener('keydown', onKeyDown);
+                // restore focus back to button
+                if (previousFocus) previousFocus.focus();
+            }
+
+            function onKeyDown(e) {
+                if (e.key === 'Escape') {
+                    closeMenu();
+                    return;
+                }
+
+                // Trap focus inside the menu when open
+                if (e.key === 'Tab') {
+                    const focusable = Array.from(menu.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])')).filter(el => !el.hasAttribute('disabled'));
+                    if (focusable.length === 0) return;
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+                    if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    } else if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    }
+                }
+            }
+
+            btn.addEventListener('click', function(e){
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                if (expanded) closeMenu(); else openMenu();
+            });
+
+            // Close when any mobile link is clicked (after navigation)
+            menu.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', () => {
+                    setTimeout(closeMenu, 50);
+                });
+            });
+
+            // Hide mobile menu when resizing to desktop sizes
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768) {
+                    closeMenu();
+                }
+            });
+
+            // Initialize ARIA state
+            menu.classList.add(...ANIM_CLASSES.closed);
+            setAriaHidden(true);
+        })();
+    </script>
 
 </body>
 </html>
