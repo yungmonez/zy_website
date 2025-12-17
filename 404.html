@@ -7,17 +7,43 @@
 </head>
 <body>
 <style>
+        /* CSS styles placed here */
         body {
-            background-color: black; /* Or use the hex code: #000000 */
-            color: white; /* Important: Change text color to white for readability */
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: black;
         }
-</style>
- <!-- <img src="bikeandcookies.png" alt="Bike and Cookies"> -->
-    <video autoplay muted loop max-width: 100% height: auto>
-    <source src="movie.mp4#t=1" type="video/mp4">
+
+        .video-container {
+            width: 90%;       /* Takes up 90% of the screen width */
+            max-width: 800px;  /* Max width of 800px on large screens */
+            margin: auto;      /* Centers the container */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden; /* Keeps shadow clean */
+        }
+
+        .video-container video {
+            width: 100%;       /* Video takes the full width of its container */
+            height: auto;      /* Height adjusts automatically to maintain aspect ratio */
+            display: block;    
+        }
     
-    <!-- Fallback text for older browsers -->
-    Your browser does not support the video tag.
-</video>
+</style>
+</head>
+<body>
+
+    <div class="video-container">
+        <video controls autoplay loop muted>
+            <source src="movie.mp4#t=1" type="video/mp4">
+            <!-- Fallback text -->
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
 </body>
 </html>
